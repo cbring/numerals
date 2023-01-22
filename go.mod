@@ -1,3 +1,3 @@
-module ronum
+module numerals
 
 go 1.19
