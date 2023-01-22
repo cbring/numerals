@@ -1,4 +1,4 @@
-package ronum
+package roman
 
 import "testing"
 
@@ -176,6 +176,27 @@ var tests = []struct {
 		"sample MMMCMXCIX",
 		3999,
 		"MMMCMXCIX",
+	},
+	// Big numbers
+	{
+		"bignum ↁ",
+		5000,
+		"ↁ",
+	},
+	{
+		"bignum ↂ",
+		10000,
+		"ↂ",
+	},
+	{
+		"bignum ↇ",
+		50000,
+		"ↇ",
+	},
+	{
+		"bignum ↈ",
+		100000,
+		"ↈ",
 	},
 }
 

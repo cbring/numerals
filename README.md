@@ -1,3 +1,3 @@
-# Roman Numerals
+# Numerals
 
-A library for converting roman numerals.
+A library for working with and converting different numerals.
