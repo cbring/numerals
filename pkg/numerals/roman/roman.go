@@ -27,91 +27,112 @@ type NumeralValue struct {
 	value   int
 }
 
-var values = []NumeralValue{
-	{
-		numeral: []Numeral{HundredThousand},
-		value:   100000,
-	},
-	{
-		numeral: []Numeral{FiftyThousand},
-		value:   50000,
-	},
-	{
-		numeral: []Numeral{TenThousand},
-		value:   10000,
-	},
-	{
-		numeral: []Numeral{FiveThousand},
-		value:   5000,
-	},
-	{
-		numeral: []Numeral{Thousand},
-		value:   1000,
-	},
-	{
-		numeral: []Numeral{Hundred, Thousand},
-		value:   900,
-	},
-	{
-		numeral: []Numeral{FiveHundred},
-		value:   500,
-	},
-	{
-		numeral: []Numeral{Hundred, FiveHundred},
-		value:   400,
-	},
-	{
-		numeral: []Numeral{Hundred},
-		value:   100,
-	},
-	{
-		numeral: []Numeral{Ten, Hundred},
-		value:   90,
-	},
-	{
-		numeral: []Numeral{Fifty},
-		value:   50,
-	},
-	{
-		numeral: []Numeral{Ten, Fifty},
-		value:   40,
-	},
-	{
-		numeral: []Numeral{Ten},
-		value:   10,
-	},
-	{
-		numeral: []Numeral{One, Ten},
-		value:   9,
-	},
-	{
-		numeral: []Numeral{Five},
-		value:   5,
-	},
-	{
-		numeral: []Numeral{One, Five},
-		value:   4,
-	},
-	{
-		numeral: []Numeral{One},
-		value:   1,
-	},
-	{
-		numeral: []Numeral{Zero}, // Nulla, or None
-		value:   0,
-	},
+var (
+	values = []NumeralValue{
+		{
+			numeral: []Numeral{HundredThousand},
+			value:   100000,
+		},
+		{
+			numeral: []Numeral{FiftyThousand},
+			value:   50000,
+		},
+		{
+			numeral: []Numeral{TenThousand},
+			value:   10000,
+		},
+		{
+			numeral: []Numeral{FiveThousand},
+			value:   5000,
+		},
+		{
+			numeral: []Numeral{Thousand},
+			value:   1000,
+		},
+		{
+			numeral: []Numeral{Hundred, Thousand},
+			value:   900,
+		},
+		{
+			numeral: []Numeral{FiveHundred},
+			value:   500,
+		},
+		{
+			numeral: []Numeral{Hundred, FiveHundred},
+			value:   400,
+		},
+		{
+			numeral: []Numeral{Hundred},
+			value:   100,
+		},
+		{
+			numeral: []Numeral{Ten, Hundred},
+			value:   90,
+		},
+		{
+			numeral: []Numeral{Fifty},
+			value:   50,
+		},
+		{
+			numeral: []Numeral{Ten, Fifty},
+			value:   40,
+		},
+		{
+			numeral: []Numeral{Ten},
+			value:   10,
+		},
+		{
+			numeral: []Numeral{One, Ten},
+			value:   9,
+		},
+		{
+			numeral: []Numeral{Five},
+			value:   5,
+		},
+		{
+			numeral: []Numeral{One, Five},
+			value:   4,
+		},
+		{
+			numeral: []Numeral{One},
+			value:   1,
+		},
+		{
+			numeral: []Numeral{Zero}, // Nulla, or None
+			value:   0,
+		},
+	}
+	numeralMap = map[Numeral]*NumeralValue{}
+)
+
+func init() {
+	for i, v := range values {
+		if len(v.numeral) == 1 {
+			numeralMap[v.numeral[0]] = &values[i]
+		}
+	}
 }
 
 // Rtoi converts roman numeral numbers to arabic numbers (integer)
 func Rtoi(num Number) int {
 	sum := 0
 
-	for _, v := range values {
-		for strings.HasPrefix(num, string(v.numeral)) {
-			sum += v.value
-			num = num[len(v.numeral):]
+	var prev = 'N'
+	var val int
+	for _, r := range num {
+		if r != prev {
+			if numeralMap[r].value < numeralMap[prev].value {
+				sum += val
+			} else {
+				sum -= val
+			}
+
+			val = 0
+			prev = r
 		}
+		val += numeralMap[r].value
 	}
+	sum += val
 
 	return sum
 }
