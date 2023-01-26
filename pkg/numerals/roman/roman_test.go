@@ -1,15 +1,19 @@
 package roman
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/gnirb/numerals/pkg/numerals"
+)
 
 type tests struct {
 	name    string
 	integer int
-	number  Number
+	number  numerals.Number
 }
 
 var (
-	numerals = []tests{
+	romanNumerals = []tests{
 		{
 			"numeral N",
 			0,
@@ -211,33 +215,34 @@ var (
 		},
 	}
 	all = [][]tests{
-		numerals,
+		romanNumerals,
 		additiveNotation,
 		subtractiveNotation,
 		clock,
 		samples,
 		bigNumbers,
 	}
+	converter = NewRomanConverter()
 )
 
-func TestRtoi(t *testing.T) {
+func TestParse(t *testing.T) {
 	for _, tt := range all {
 		for _, ttt := range tt {
 			t.Run(ttt.name, func(t *testing.T) {
-				if got := Rtoi(ttt.number); got != ttt.integer {
-					t.Errorf("Rtoi() = %v, want %v", got, ttt.number)
+				if got := converter.Parse(ttt.number); got != ttt.integer {
+					t.Errorf("Parse() = %v, want %v", got, ttt.number)
 				}
 			})
 		}
 	}
 }
 
-func TestItor(t *testing.T) {
+func TestFormat(t *testing.T) {
 	for _, tt := range all {
 		for _, ttt := range tt {
 			t.Run(ttt.name, func(t *testing.T) {
-				if got := Itor(ttt.integer); got != ttt.number {
-					t.Errorf("Itor() = %v, want %v", got, ttt.number)
+				if got := converter.Format(ttt.integer); got != ttt.number {
+					t.Errorf("Format() = %v, want %v", got, ttt.number)
 				}
 			})
 		}
@@ -248,7 +253,7 @@ func TestOtherForms(t *testing.T) {
 	var tests = []struct {
 		name    string
 		integer int
-		number  Number
+		number  numerals.Number
 	}{
 		// Additive
 		{
@@ -320,60 +325,60 @@ func TestOtherForms(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Rtoi(tt.number); got != tt.integer {
-				t.Errorf("Rtoi() = %v, want %v", got, tt.number)
+			if got := converter.Parse(tt.number); got != tt.integer {
+				t.Errorf("Parse() = %v, want %v", got, tt.number)
 			}
 		})
 	}
 }
 
-func BenchmarkRtoi_numerals(b *testing.B) {
+func BenchmarkParse_numerals(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		for _, tt := range numerals {
-			Rtoi(tt.number)
+		for _, tt := range romanNumerals {
+			converter.Parse(tt.number)
 		}
 	}
 }
 
-func BenchmarkRtoi_samples(b *testing.B) {
+func BenchmarkParse_samples(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, tt := range samples {
-			Rtoi(tt.number)
+			converter.Parse(tt.number)
 		}
 	}
 }
 
-func BenchmarkRtoi_all(b *testing.B) {
+func BenchmarkParse_all(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, tt := range all {
 			for _, ttt := range tt {
-				Rtoi(ttt.number)
+				converter.Parse(ttt.number)
 			}
 		}
 	}
 }
 
-func BenchmarkItor_numerals(b *testing.B) {
+func BenchmarkFormat_numerals(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		for _, tt := range numerals {
-			Itor(tt.integer)
+		for _, tt := range romanNumerals {
+			converter.Format(tt.integer)
 		}
 	}
 }
 
-func BenchmarkItor_samples(b *testing.B) {
+func BenchmarkFormat_samples(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, tt := range samples {
-			Itor(tt.integer)
+			converter.Format(tt.integer)
 		}
 	}
 }
 
-func BenchmarkItor_all(b *testing.B) {
+func BenchmarkFormat_all(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		for _, tt := range all {
 			for _, ttt := range tt {
-				Itor(ttt.integer)
+				converter.Format(ttt.integer)
 			}
 		}
 	}

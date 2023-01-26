@@ -2,146 +2,155 @@ package roman
 
 import (
 	"strings"
+
+	"github.com/gnirb/numerals/pkg/numerals"
 )
 
-type Numeral = rune
-type Number = string
-
 const (
-	Zero            Numeral = 'N'
-	One             Numeral = 'I'
-	Five            Numeral = 'V'
-	Ten             Numeral = 'X'
-	Fifty           Numeral = 'L'
-	Hundred         Numeral = 'C'
-	FiveHundred     Numeral = 'D'
-	Thousand        Numeral = 'M'
-	FiveThousand    Numeral = 'ↁ'
-	TenThousand     Numeral = 'ↂ'
-	FiftyThousand   Numeral = 'ↇ'
-	HundredThousand Numeral = 'ↈ'
+	Zero            numerals.Numeral = 'N'
+	One             numerals.Numeral = 'I'
+	Five            numerals.Numeral = 'V'
+	Ten             numerals.Numeral = 'X'
+	Fifty           numerals.Numeral = 'L'
+	Hundred         numerals.Numeral = 'C'
+	FiveHundred     numerals.Numeral = 'D'
+	Thousand        numerals.Numeral = 'M'
+	FiveThousand    numerals.Numeral = 'ↁ'
+	TenThousand     numerals.Numeral = 'ↂ'
+	FiftyThousand   numerals.Numeral = 'ↇ'
+	HundredThousand numerals.Numeral = 'ↈ'
 )
 
 type NumeralValue struct {
-	numeral []Numeral
+	numeral []numerals.Numeral
 	value   int
 }
 
 var (
 	values = []NumeralValue{
 		{
-			numeral: []Numeral{HundredThousand},
+			numeral: []numerals.Numeral{HundredThousand},
 			value:   100000,
 		},
 		{
-			numeral: []Numeral{FiftyThousand},
+			numeral: []numerals.Numeral{FiftyThousand},
 			value:   50000,
 		},
 		{
-			numeral: []Numeral{TenThousand},
+			numeral: []numerals.Numeral{TenThousand},
 			value:   10000,
 		},
 		{
-			numeral: []Numeral{FiveThousand},
+			numeral: []numerals.Numeral{FiveThousand},
 			value:   5000,
 		},
 		{
-			numeral: []Numeral{Thousand},
+			numeral: []numerals.Numeral{Thousand},
 			value:   1000,
 		},
 		{
-			numeral: []Numeral{Hundred, Thousand},
+			numeral: []numerals.Numeral{Hundred, Thousand},
 			value:   900,
 		},
 		{
-			numeral: []Numeral{FiveHundred},
+			numeral: []numerals.Numeral{FiveHundred},
 			value:   500,
 		},
 		{
-			numeral: []Numeral{Hundred, FiveHundred},
+			numeral: []numerals.Numeral{Hundred, FiveHundred},
 			value:   400,
 		},
 		{
-			numeral: []Numeral{Hundred},
+			numeral: []numerals.Numeral{Hundred},
 			value:   100,
 		},
 		{
-			numeral: []Numeral{Ten, Hundred},
+			numeral: []numerals.Numeral{Ten, Hundred},
 			value:   90,
 		},
 		{
-			numeral: []Numeral{Fifty},
+			numeral: []numerals.Numeral{Fifty},
 			value:   50,
 		},
 		{
-			numeral: []Numeral{Ten, Fifty},
+			numeral: []numerals.Numeral{Ten, Fifty},
 			value:   40,
 		},
 		{
-			numeral: []Numeral{Ten},
+			numeral: []numerals.Numeral{Ten},
 			value:   10,
 		},
 		{
-			numeral: []Numeral{One, Ten},
+			numeral: []numerals.Numeral{One, Ten},
 			value:   9,
 		},
 		{
-			numeral: []Numeral{Five},
+			numeral: []numerals.Numeral{Five},
 			value:   5,
 		},
 		{
-			numeral: []Numeral{One, Five},
+			numeral: []numerals.Numeral{One, Five},
 			value:   4,
 		},
 		{
-			numeral: []Numeral{One},
+			numeral: []numerals.Numeral{One},
 			value:   1,
 		},
 		{
-			numeral: []Numeral{Zero}, // Nulla, or None
+			numeral: []numerals.Numeral{Zero}, // Nulla, or None
 			value:   0,
 		},
 	}
-	numeralMap = map[Numeral]*NumeralValue{}
+	numeralMap = map[numerals.Numeral]*NumeralValue{}
 )
 
 func init() {
 	for i, v := range values {
+		// skip values with subtractive notation (more than one numeral)
 		if len(v.numeral) == 1 {
 			numeralMap[v.numeral[0]] = &values[i]
 		}
 	}
+
+	numerals.Registry().Register("roman", NewRomanConverter())
 }
 
-// Rtoi converts roman numeral numbers to arabic numbers (integer)
-func Rtoi(num Number) int {
+type romanConverter struct{}
+
+func NewRomanConverter() *romanConverter {
+	return &romanConverter{}
+}
+
+// Parse converts roman numeral numbers to arabic numbers (integer)
+func (r romanConverter) Parse(number numerals.Number) int {
 	sum := 0
 
-	var prev = 'N'
+	var prev numerals.Numeral = 'N'
 	var val int
-	for _, r := range num {
-		if r != prev {
-			if numeralMap[r].value < numeralMap[prev].value {
+	for _, r := range number {
+		var num = numerals.Numeral(r)
+		if num != prev {
+			if numeralMap[num].value < numeralMap[prev].value {
 				sum += val
 			} else {
 				sum -= val
 			}
 
 			val = 0
-			prev = r
+			prev = num
 		}
-		val += numeralMap[r].value
+		val += numeralMap[num].value
 	}
 	sum += val
 
 	return sum
 }
 
-func Itor(num int) Number {
+func (r romanConverter) Format(num int) numerals.Number {
 	nb := strings.Builder{}
 
 	if num == 0 {
-		nb.WriteRune(Zero)
+		nb.WriteRune(rune(Zero))
 	} else {
 		for _, v := range values {
 			if num == 0 {
@@ -157,5 +166,5 @@ func Itor(num int) Number {
 		}
 	}
 
-	return nb.String()
+	return numerals.Number(nb.String())
 }
