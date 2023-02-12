@@ -2,6 +2,10 @@
 
 A library for working with and converting different numerals.
 
+Supported numerals:
+* Roman
+* Egyptian
+
 ## CLI
 
 A CLI is available to format and parse numbers.
