@@ -6,11 +6,11 @@ import (
 	"strconv"
 
 	"github.com/gnirb/numerals/pkg/numerals"
-	_ "github.com/gnirb/numerals/pkg/numerals/roman"
+	"github.com/gnirb/numerals/pkg/registry"
 )
 
 func main() {
-	registry := numerals.Registry()
+	registry := registry.Registry()
 
 	system := flag.String("system", "roman", fmt.Sprintf("The numeral system used. \nSupported systems: %v", registry.List()))
 	parse := flag.Bool("parse", false, "Parse numeral system")

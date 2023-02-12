@@ -111,8 +111,6 @@ func init() {
 			numeralMap[v.numeral[0]] = &values[i]
 		}
 	}
-
-	numerals.Registry().Register("roman", NewRomanConverter())
 }
 
 type romanConverter struct{}
