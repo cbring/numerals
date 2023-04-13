@@ -34,11 +34,13 @@ func (c SignValueConverter) Parse(number Number) int {
 	var val int
 	for _, r := range number {
 		var num = Numeral(r)
-		if prev != 0 && num != prev {
-			if c.NumeralMap[num].Value < c.NumeralMap[prev].Value {
-				sum += val
-			} else {
-				sum -= val
+		if num != prev {
+			if prev != 0 {
+				if c.NumeralMap[num].Value < c.NumeralMap[prev].Value {
+					sum += val
+				} else {
+					sum -= val
+				}
 			}
 
 			val = 0
@@ -52,11 +54,12 @@ func (c SignValueConverter) Parse(number Number) int {
 }
 
 func (c SignValueConverter) Format(num int) Number {
-	nb := strings.Builder{}
+	numberBuilder := strings.Builder{}
 
 	if num == 0 {
+		// handle zero if supported by the numerical system
 		if last := c.Values[len(c.Values)-1]; last.Value == 0 {
-			nb.WriteRune(rune(c.Zero))
+			numberBuilder.WriteRune(rune(c.Zero))
 		}
 	} else {
 		for _, v := range c.Values {
@@ -66,12 +69,20 @@ func (c SignValueConverter) Format(num int) Number {
 			if num >= v.Value {
 				cnt := num / v.Value
 				for i := 0; i < cnt; i++ {
-					_, _ = nb.WriteString(string(v.Numeral))
+					_, _ = numberBuilder.WriteString(string(v.Numeral))
 				}
 				num -= cnt * v.Value
 			}
 		}
 	}
 
-	return Number(nb.String())
+	return Number(numberBuilder.String())
+}
+
+func Repeat(n Numeral, times int) []Numeral {
+	var numerals []Numeral
+	for i := 0; i < times; i++ {
+		numerals = append(numerals, n)
+	}
+	return numerals
 }

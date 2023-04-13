@@ -5,6 +5,7 @@ import (
 
 	"github.com/gnirb/numerals/pkg/numerals"
 	"github.com/gnirb/numerals/pkg/numerals/egyptian"
+	"github.com/gnirb/numerals/pkg/numerals/etruscan"
 	"github.com/gnirb/numerals/pkg/numerals/roman"
 )
 
@@ -21,6 +22,7 @@ type registry struct {
 func init() {
 	Registry().Register("roman", roman.NewRomanConverter())
 	Registry().Register("egyptian", egyptian.NewEgyptianConverter())
+	Registry().Register("etruscan", etruscan.NewEtruscanConverter())
 }
 
 func Registry() *registry {

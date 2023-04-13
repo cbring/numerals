@@ -5,6 +5,7 @@ A library for working with and converting different numerals.
 Supported numerals:
 * Roman
 * Egyptian
+* Etruscan
 
 ## CLI
 
