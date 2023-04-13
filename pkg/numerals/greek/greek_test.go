@@ -1,10 +1,10 @@
-package etruscan_test
+package greek_test
 
 import (
 	"testing"
 
 	"github.com/gnirb/numerals/pkg/numerals"
-	"github.com/gnirb/numerals/pkg/numerals/etruscan"
+	"github.com/gnirb/numerals/pkg/numerals/greek"
 )
 
 type tests struct {
@@ -14,61 +14,41 @@ type tests struct {
 }
 
 var (
-	etruscanNumerals = []tests{
+	greekNumerals = []tests{
 		{
-			"numeral zero",
-			0,
-			"",
-		},
-		{
-			"numeral one",
+			"numeral 1",
 			1,
-			"𐌠",
+			"Α",
 		},
 		{
-			"numeral five",
-			5,
-			"𐌡",
+			"numeral 9",
+			9,
+			"Θ",
 		},
 		{
-			"numeral ten",
+			"numeral 10",
 			10,
-			"𐌢",
+			"Ι",
 		},
 		{
-			"numeral fifty",
-			50,
-			"𐌣",
-		},
-		{
-			"numeral hundred",
+			"numeral 100",
 			100,
-			"𐌟",
+			"Ρ",
 		},
 	}
 	samples = []tests{
 		// Samples
 		{
-			"sample 87",
-			87,
-			"𐌣𐌠𐌠𐌠𐌢𐌢𐌢𐌢",
-		},
-		{
-			"sample 7",
-			7,
-			"𐌡𐌠𐌠",
-		},
-		{
-			"sample 17",
-			17,
-			"𐌠𐌠𐌠𐌢𐌢",
+			"sample 2019",
+			2019,
+			"͵ΒΙΘʹ",
 		},
 	}
 	all = [][]tests{
-		etruscanNumerals,
+		greekNumerals,
 		samples,
 	}
-	converter = etruscan.NewEtruscanConverter()
+	converter = greek.NewGreekConverter()
 )
 
 func TestParse(t *testing.T) {
