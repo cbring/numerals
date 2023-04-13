@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/gnirb/numerals/pkg/numerals"
+	"github.com/gnirb/numerals/pkg/numerals/aegan"
 	"github.com/gnirb/numerals/pkg/numerals/egyptian"
 	"github.com/gnirb/numerals/pkg/numerals/etruscan"
 	"github.com/gnirb/numerals/pkg/numerals/roman"
@@ -23,6 +24,7 @@ func init() {
 	Registry().Register("roman", roman.NewRomanConverter())
 	Registry().Register("egyptian", egyptian.NewEgyptianConverter())
 	Registry().Register("etruscan", etruscan.NewEtruscanConverter())
+	Registry().Register("aegan", aegan.NewAeganConverter())
 }
 
 func Registry() *registry {

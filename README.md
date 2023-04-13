@@ -3,9 +3,10 @@
 A library for working with and converting different numerals.
 
 Supported numerals:
-* Roman
-* Egyptian
-* Etruscan
+* Roman (https://en.wikipedia.org/wiki/Roman_numerals)
+* Egyptian (https://en.wikipedia.org/wiki/Egyptian_numerals)
+* Etruscan (https://en.wikipedia.org/wiki/Etruscan_numerals)
+* Aegan (https://en.wikipedia.org/wiki/Aegean_numerals)
 
 ## CLI
 
