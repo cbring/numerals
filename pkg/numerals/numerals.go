@@ -53,6 +53,7 @@ func (c SignValueConverter) Parse(number Number) int {
 	return sum
 }
 
+// Format formats an integer to numeral numbers
 func (c SignValueConverter) Format(num int) Number {
 	numberBuilder := strings.Builder{}
 

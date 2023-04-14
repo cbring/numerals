@@ -1,13 +1,17 @@
 package greek
 
-import "github.com/gnirb/numerals/pkg/numerals"
+import (
+	"strings"
+
+	"github.com/gnirb/numerals/pkg/numerals"
+)
 
 // Symbols are not quite sequential in unicode unfortunately,
 // so we have to map them explicitly
 const (
 	Zero        numerals.Numeral = '𐆊'
 	Keraia      numerals.Numeral = 'ʹ'
-	LowerKeraia numerals.Numeral = ','
+	LowerKeraia numerals.Numeral = '͵'
 
 	One   numerals.Numeral = 'Α'
 	Two   numerals.Numeral = 'Β'
@@ -150,26 +154,134 @@ var (
 			Numeral: []numerals.Numeral{One},
 			Value:   1,
 		},
-		{
-			Numeral: []numerals.Numeral{Zero},
-			Value:   0,
-		},
 	}
 	numeralMap = map[numerals.Numeral]*numerals.NumeralValue{}
 )
 
 func init() {
+
 	for i, v := range values {
 		numeralMap[v.Numeral[0]] = &values[i]
 	}
 }
 
-type greekConverter = numerals.SignValueConverter
+type greekConverter struct {
+	Values     []numerals.NumeralValue
+	NumeralMap map[numerals.Numeral]*numerals.NumeralValue
+	Zero       numerals.Numeral
+	Indicators []numerals.NumeralValue
+}
+
+func (c greekConverter) Parse(number numerals.Number) int {
+	const defaultMultiplier = 1
+	sum := 0
+
+	var prev = c.Zero
+	var val int
+	var multiplier = defaultMultiplier
+
+	for _, r := range number {
+		var num = numerals.Numeral(r)
+
+		if m, found := c.indicator(num); found {
+			multiplier = m
+			continue
+		}
+
+		if num != prev {
+
+			if prev != 0 && prev != c.Zero {
+
+				if c.NumeralMap[num].Value < c.NumeralMap[prev].Value {
+					sum += val
+				} else {
+					if multiplier != defaultMultiplier {
+						multiplier = defaultMultiplier
+						sum += val
+					} else {
+						sum -= val
+					}
+				}
+			}
+
+			val = 0
+			prev = num
+		}
+		val += c.NumeralMap[num].Value * multiplier
+	}
+	sum += val
+
+	return sum
+}
+
+func (c greekConverter) indicator(num numerals.Numeral) (int, bool) {
+	for _, m := range c.Indicators {
+		if m.Numeral[0] == num {
+			return m.Value, true
+		}
+	}
+	return 1, false
+}
+
+// Format formats an integer to numeral numbers
+func (c greekConverter) Format(num int) numerals.Number {
+	numberBuilder := strings.Builder{}
+
+	if num == 0 {
+		// handle zero if supported by the numerical system
+		if last := c.Values[len(c.Values)-1]; last.Value == 0 {
+			numberBuilder.WriteRune(rune(c.Zero))
+		}
+	} else {
+		var lastMul = 0
+		for _, m := range c.Indicators {
+			mul := m.Value
+			ind := m.Numeral[0]
+			for _, v := range c.Values {
+				if num == 0 {
+					break
+				}
+
+				val := v.Value * mul
+				if num >= val {
+					if lastMul == 0 && mul > 1 {
+						lastMul = mul
+						_, _ = numberBuilder.WriteRune(rune(ind))
+					}
+					cnt := num / val
+					for i := 0; i < cnt; i++ {
+						_, _ = numberBuilder.WriteString(string(v.Numeral))
+					}
+					num -= cnt * val
+
+					if num == 0 && mul == 1 {
+						_, _ = numberBuilder.WriteRune(rune(ind))
+					}
+
+					continue
+				}
+			}
+
+		}
+	}
+
+	return numerals.Number(numberBuilder.String())
+}
 
 func NewGreekConverter() *greekConverter {
 	return &greekConverter{
 		Values:     values,
 		NumeralMap: numeralMap,
 		Zero:       Zero,
+		Indicators: []numerals.NumeralValue{
+			{
+				Numeral: []numerals.Numeral{LowerKeraia},
+				Value:   1000,
+			},
+			{
+				Numeral: []numerals.Numeral{Keraia},
+				Value:   1,
+			},
+		},
 	}
 }
